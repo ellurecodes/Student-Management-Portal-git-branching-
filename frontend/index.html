@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#4f46e5">
+  <title>CampusCore | Student Information Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <!-- Toast Notification Stack -->
+  <div id="toastContainer" class="toast-stack" aria-live="polite"></div>
+
+  <!-- Main App Shell -->
+  <div class="app-shell">
+    
+    <!-- Collapsible / Floating Sidebar -->
+    <aside class="app-sidebar" id="appSidebar">
+      <div class="sidebar-brand">
+        <div class="brand-badge">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+          </svg>
+        </div>
+        <div class="brand-meta">
+          <div class="brand-name">CampusCore</div>
+          <div class="brand-sub">Student Portal</div>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">NAVIGATION</div>
+        <a href="#overview" class="nav-item active" id="navOverview">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          <span>Dashboard</span>
+        </a>
+
+        <a href="#directory" class="nav-item" id="navDirectory">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          <span>Students</span>
+          <span class="nav-pill" id="sidebarTotalPill">0</span>
+        </a>
+
+        <a href="#analytics" class="nav-item" id="navAnalytics">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          <span>Departments</span>
+        </a>
+
+        <div class="nav-section-title">ACTIONS</div>
+        <button type="button" class="nav-item action-nav" id="sidebarAddBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="16"></line>
+            <line x1="8" y1="12" x2="16" y2="12"></line>
+          </svg>
+          <span>Add Student</span>
+        </button>
+
+        <button type="button" class="nav-item action-nav" id="sidebarExportBtn">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Export CSV</span>
+        </button>
+      </nav>
+
+      <!-- Sidebar Status Card -->
+      <div class="sidebar-footer">
+        <div class="system-status-card" id="systemStatusCard" title="Click to ping backend server">
+          <div class="status-indicator">
+            <span class="status-pulse-dot" id="statusPulseDot"></span>
+            <span class="status-label-text" id="statusLabelText">Checking Server...</span>
+          </div>
+          <div class="status-details">
+            <span id="systemEngineNote">REST API :5000</span>
+            <span class="latency-badge" id="sidebarLatencyBadge">— ms</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="app-main">
+      
+      <!-- Top Navigation Bar -->
+      <header class="app-topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle-btn" id="menuToggleBtn" aria-label="Toggle menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          
+          <!-- Quick Search -->
+          <div class="topbar-search">
+            <svg class="search-svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input id="topSearchInput" type="text" placeholder="Quick search by name, USN, or email..." aria-label="Quick search">
+            <span class="search-kbd-hint">/</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <!-- Theme Switcher -->
+          <button id="themeToggleBtn" class="topbar-icon-btn" title="Toggle Light / Dark mode" aria-label="Toggle Theme">
+            <svg id="themeIconSun" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            <svg id="themeIconMoon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+          </button>
+
+          <!-- Top Action Buttons -->
+          <button id="topExportBtn" class="btn btn-secondary btn-sm" title="Download CSV spreadsheet">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            <span>Export CSV</span>
+          </button>
+
+          <button id="topAddBtn" class="btn btn-primary btn-sm">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Add Student</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Dashboard Scrollable Body -->
+      <main class="dashboard-body">
+        
+        <!-- Welcome Hero Banner -->
+        <section class="portal-hero" id="overview">
+          <div class="hero-left">
+            <div class="portal-tag">
+              <span class="portal-tag-dot"></span>
+              <span>VTU ACADEMIC SYSTEM &bull; RVCE FORMAT (1RV)</span>
+            </div>
+            <h1 class="portal-heading">Student Administration Portal</h1>
+            <p class="portal-sub">Real-time student registry, validation enforcement, department analytics, and academic records.</p>
+          </div>
+          <div class="hero-right">
+            <div class="hero-date-card">
+              <span class="date-label">SYSTEM CLOCK</span>
+              <span class="date-val" id="portalDateVal">—</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- KPI Metric Cards Grid -->
+        <section class="kpi-grid">
+          <!-- Total Students -->
+          <div class="kpi-card kpi-card-indigo">
+            <div class="kpi-header">
+              <span class="kpi-title">Total Enrolled</span>
+              <div class="kpi-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="kpiTotalStudents">0</div>
+            <div class="kpi-footer">
+              <span class="kpi-status-pill green">Active</span>
+              <span class="kpi-note" id="kpiTotalNote">Enrolled students</span>
+            </div>
+          </div>
+
+          <!-- Departments -->
+          <div class="kpi-card kpi-card-teal">
+            <div class="kpi-header">
+              <span class="kpi-title">Departments</span>
+              <div class="kpi-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="kpiDepartments">0</div>
+            <div class="kpi-footer">
+              <span class="kpi-note">Branches (CSE, ISE, ECE...)</span>
+            </div>
+          </div>
+
+          <!-- Active Semesters -->
+          <div class="kpi-card kpi-card-amber">
+            <div class="kpi-header">
+              <span class="kpi-title">Active Semesters</span>
+              <div class="kpi-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                  <polyline points="2 17 12 22 22 17"></polyline>
+                  <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="kpi-value" id="kpiSemesters">0</div>
+            <div class="kpi-footer">
+              <span class="kpi-note">Years 1 through 4 (Sem 1-8)</span>
+            </div>
+          </div>
+
+          <!-- API Health / Server -->
+          <div class="kpi-card kpi-card-purple">
+            <div class="kpi-header">
+              <span class="kpi-title">System Status</span>
+              <div class="kpi-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="kpi-value text-sm" id="kpiServerStatus">Online</div>
+            <div class="kpi-footer">
+              <span class="kpi-note" id="kpiStorageNote">Local Storage Mode</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Analytics & Chart Section -->
+        <section class="card-section analytics-section" id="analytics">
+          <div class="section-topbar">
+            <div>
+              <h2 class="section-title">Department Distribution</h2>
+              <p class="section-subtitle">Student enrollment breakdown across branches</p>
+            </div>
+            <div class="analytics-badges" id="deptAnalyticsBadges"></div>
+          </div>
+          <div class="chart-box">
+            <canvas id="departmentChart" height="130"></canvas>
+          </div>
+        </section>
+
+        <!-- Student Directory Section -->
+        <section class="card-section directory-section" id="directory">
+          <div class="directory-topbar">
+            <div class="directory-title-area">
+              <h2 class="section-title">Student Directory</h2>
+              <p class="section-subtitle" id="recordCountSubtitle">Showing 0 students</p>
+            </div>
+
+            <!-- Toolbar Controls -->
+            <div class="directory-controls">
+              <!-- Department Filter -->
+              <div class="custom-select-wrap">
+                <select id="departmentFilter" class="form-select-sm" aria-label="Department Filter">
+                  <option value="">All Departments</option>
+                  <option value="CSE">CSE (Computer Science)</option>
+                  <option value="ISE">ISE (Information Science)</option>
+                  <option value="ECE">ECE (Electronics & Comm)</option>
+                  <option value="EEE">EEE (Electrical & Electronics)</option>
+                  <option value="ME">ME (Mechanical)</option>
+                  <option value="CIV">CIV (Civil)</option>
+                  <option value="AIML">AIML (AI & Machine Learning)</option>
+                  <option value="DS">DS (Data Science)</option>
+                </select>
+              </div>
+
+              <!-- Semester Filter -->
+              <div class="custom-select-wrap">
+                <select id="semesterFilter" class="form-select-sm" aria-label="Semester Filter">
+                  <option value="">All Semesters</option>
+                  <option value="1">Semester 1</option>
+                  <option value="2">Semester 2</option>
+                  <option value="3">Semester 3</option>
+                  <option value="4">Semester 4</option>
+                  <option value="5">Semester 5</option>
+                  <option value="6">Semester 6</option>
+                  <option value="7">Semester 7</option>
+                  <option value="8">Semester 8</option>
+                </select>
+              </div>
+
+              <!-- Sorting -->
+              <div class="custom-select-wrap">
+                <select id="sortBy" class="form-select-sm" aria-label="Sort Options">
+                  <option value="newest">Sort: Newest First</option>
+                  <option value="nameAsc">Name (A &rarr; Z)</option>
+                  <option value="nameDesc">Name (Z &rarr; A)</option>
+                  <option value="usnAsc">USN (1RV...)</option>
+                  <option value="semesterAsc">Semester (Low &rarr; High)</option>
+                  <option value="semesterDesc">Semester (High &rarr; Low)</option>
+                </select>
+              </div>
+
+              <!-- View Switcher (Table vs Grid Cards) -->
+              <div class="view-toggle-group">
+                <button id="viewModeTableBtn" class="view-btn active" title="Table View" aria-label="Table View">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                  </svg>
+                </button>
+                <button id="viewModeGridBtn" class="view-btn" title="Grid View" aria-label="Grid View">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Refresh Button -->
+              <button id="refreshBtn" class="btn btn-outline-icon" title="Refresh Directory">
+                <svg id="refreshSvg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="23 4 23 10 17 10"></polyline>
+                  <polyline points="1 20 1 14 7 14"></polyline>
+                  <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Active Filter Tags Bar -->
+          <div id="filterTagsBar" class="filter-tags-bar hidden">
+            <span class="filter-tags-label">Filters Applied:</span>
+            <div id="filterTagsList" class="filter-tags-list"></div>
+            <button id="clearAllFiltersBtn" class="clear-filters-link">Reset all</button>
+          </div>
+
+          <!-- Table View Container -->
+          <div id="tableViewContainer" class="table-container">
+            <table class="modern-table">
+              <thead>
+                <tr>
+                  <th>Student Info</th>
+                  <th>USN (1RV Format)</th>
+                  <th>Department</th>
+                  <th>Semester</th>
+                  <th>Email & Contact</th>
+                  <th class="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="studentsTableBody">
+                <tr>
+                  <td colspan="6" class="table-state-cell">
+                    <div class="loader-spinner"></div>
+                    <span>Loading student records...</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Grid Cards View Container (Alternative View) -->
+          <div id="gridViewContainer" class="students-grid hidden"></div>
+
+          <!-- Directory Footer -->
+          <div class="directory-footer">
+            <span class="footer-count-text" id="footerTotalDisplay">0 students total</span>
+            <button id="footerDownloadBtn" class="btn btn-ghost btn-xs">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>Download CSV</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="portal-footer">
+          <p>CampusCore Student Information System &bull; Express REST API &bull; Strict 1RV Validation</p>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <!-- ================= ADD / EDIT MODAL DIALOG ================= -->
+  <dialog id="studentDialog" class="modal-dialog">
+    <div class="modal-window">
+      <div class="modal-header">
+        <div class="modal-header-text">
+          <span class="modal-pill" id="dialogHeaderPill">REGISTRATION</span>
+          <h2 class="modal-title" id="dialogTitle">Add New Student</h2>
+        </div>
+        <button id="closeDialogBtn" class="modal-close-icon" type="button" aria-label="Close">✕</button>
+      </div>
+
+      <form id="studentForm" class="modal-form" novalidate>
+        <input id="studentId" type="hidden">
+
+        <!-- Full Name (Only Alphabets Allowed) -->
+        <div class="input-block">
+          <div class="input-header">
+            <label for="name" class="input-label">Full Name <span class="req">*</span></label>
+            <span class="input-hint" id="nameHint">Alphabets only</span>
+          </div>
+          <div class="input-field-wrap">
+            <span class="input-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </span>
+            <input 
+              id="name" 
+              name="name" 
+              type="text" 
+              required 
+              minlength="2" 
+              maxlength="100" 
+              placeholder="e.g. Rahul Sharma" 
+              autocomplete="name"
+            >
+            <span class="field-feedback" id="nameFeedback"></span>
+          </div>
+          <p class="field-error-msg hidden" id="nameError">Name must contain only alphabets and spaces (minimum 2 letters).</p>
+        </div>
+
+        <!-- USN & Email Row -->
+        <div class="form-row-grid">
+          <!-- USN (Strict 1RV Format) -->
+          <div class="input-block">
+            <div class="input-header">
+              <label for="usn" class="input-label">USN (1RV Format) <span class="req">*</span></label>
+              <span class="input-hint">Format: 1RVXXXXXXX</span>
+            </div>
+            <div class="input-field-wrap">
+              <span class="input-icon font-mono">1RV</span>
+              <input 
+                id="usn" 
+                name="usn" 
+                type="text" 
+                required 
+                maxlength="11" 
+                placeholder="e.g. 1RV24CS001" 
+                style="text-transform: uppercase; font-family: var(--font-mono); letter-spacing: 0.5px;"
+              >
+              <span class="field-feedback" id="usnFeedback"></span>
+            </div>
+            <p class="field-error-msg hidden" id="usnError">USN must start with '1RV' (e.g. 1RV24CS001 or 1RV25CS205).</p>
+          </div>
+
+          <!-- Email -->
+          <div class="input-block">
+            <div class="input-header">
+              <label for="email" class="input-label">Email Address <span class="req">*</span></label>
+              <span class="input-hint">Valid email</span>
+            </div>
+            <div class="input-field-wrap">
+              <span class="input-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                  <polyline points="22,6 12,13 2,6"></polyline>
+                </svg>
+              </span>
+              <input 
+                id="email" 
+                name="email" 
+                type="email" 
+                required 
+                placeholder="student@example.com" 
+                autocomplete="email"
+              >
+              <span class="field-feedback" id="emailFeedback"></span>
+            </div>
+            <p class="field-error-msg hidden" id="emailError">Please enter a valid email address.</p>
+          </div>
+        </div>
+
+        <!-- Department & Semester Row -->
+        <div class="form-row-grid">
+          <!-- Department -->
+          <div class="input-block">
+            <label for="department" class="input-label">Department <span class="req">*</span></label>
+            <div class="input-field-wrap">
+              <select id="department" name="department" required>
+                <option value="">Select Department</option>
+                <option value="CSE">CSE - Computer Science & Engineering</option>
+                <option value="ISE">ISE - Information Science & Engineering</option>
+                <option value="ECE">ECE - Electronics & Communication</option>
+                <option value="EEE">EEE - Electrical & Electronics</option>
+                <option value="ME">ME - Mechanical Engineering</option>
+                <option value="CIV">CIV - Civil Engineering</option>
+                <option value="AIML">AIML - AI & Machine Learning</option>
+                <option value="DS">DS - Data Science</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Semester -->
+          <div class="input-block">
+            <label for="semester" class="input-label">Semester <span class="req">*</span></label>
+            <div class="input-field-wrap">
+              <select id="semester" name="semester" required>
+                <option value="">Select Semester</option>
+                <option value="1">Semester 1 (1st Year)</option>
+                <option value="2">Semester 2 (1st Year)</option>
+                <option value="3">Semester 3 (2nd Year)</option>
+                <option value="4">Semester 4 (2nd Year)</option>
+                <option value="5">Semester 5 (3rd Year)</option>
+                <option value="6">Semester 6 (3rd Year)</option>
+                <option value="7">Semester 7 (4th Year)</option>
+                <option value="8">Semester 8 (4th Year)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phone Number -->
+        <div class="input-block">
+          <div class="input-header">
+            <label for="phone" class="input-label">Phone Number <span class="opt">(Optional)</span></label>
+            <span class="input-hint">Digits only</span>
+          </div>
+          <div class="input-field-wrap">
+            <span class="input-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+            </span>
+            <input 
+              id="phone" 
+              name="phone" 
+              type="tel" 
+              placeholder="+91 9876543210" 
+              autocomplete="tel"
+            >
+          </div>
+        </div>
+
+        <!-- Live Validation Alert Box -->
+        <div id="formAlertBox" class="form-alert-banner hidden"></div>
+
+        <!-- Modal Actions -->
+        <div class="modal-btn-row">
+          <button id="cancelFormBtn" class="btn btn-secondary" type="button">Cancel</button>
+          <button id="submitStudentBtn" class="btn btn-primary" type="submit">
+            <span id="submitSpinner" class="btn-spinner hidden"></span>
+            <span id="submitBtnText">Save Record</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- ================= VIEW DETAILS MODAL ================= -->
+  <dialog id="viewDetailsDialog" class="modal-dialog">
+    <div class="modal-window view-profile-window">
+      <div class="profile-header-banner">
+        <button id="closeProfileBtn" class="modal-close-icon light" type="button" aria-label="Close">✕</button>
+        <div class="profile-avatar-circle" id="profileAvatar">RS</div>
+        <h2 class="profile-fullname" id="profileName">Rahul Sharma</h2>
+        <div class="profile-badge-row">
+          <span class="profile-pill-usn" id="profileUsn">1RV24CS045</span>
+          <span class="profile-pill-dept" id="profileDept">CSE</span>
+        </div>
+      </div>
+
+      <div class="profile-info-grid">
+        <div class="info-tile">
+          <span class="info-label">Current Academic Level</span>
+          <span class="info-value" id="profileSemester">Semester 4 (2nd Year)</span>
+        </div>
+
+        <div class="info-tile">
+          <span class="info-label">Email Address</span>
+          <div class="copy-field">
+            <span class="info-value text-break" id="profileEmail">rahul@example.edu</span>
+            <button class="icon-copy-btn" data-copy="profileEmail" title="Copy email">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="info-tile">
+          <span class="info-label">Contact Phone</span>
+          <div class="copy-field">
+            <span class="info-value" id="profilePhone">—</span>
+            <button class="icon-copy-btn hidden" id="profilePhoneCopy" data-copy="profilePhone" title="Copy phone">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="info-tile">
+          <span class="info-label">Registration Timestamp</span>
+          <span class="info-value text-sm text-subtle" id="profileCreated">—</span>
+        </div>
+      </div>
+
+      <div class="profile-action-bar">
+        <button id="profileDeleteBtn" class="btn btn-danger-soft">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          <span>Delete Student</span>
+        </button>
+        <button id="profileEditBtn" class="btn btn-primary">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          <span>Edit Details</span>
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ================= DELETE CONFIRMATION DIALOG ================= -->
+  <dialog id="deleteConfirmDialog" class="modal-dialog">
+    <div class="modal-window delete-confirm-window">
+      <div class="delete-icon-shield">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </div>
+
+      <h3 class="delete-heading">Delete Student Record?</h3>
+      <p class="delete-message">
+        Are you sure you want to permanently remove <strong id="deleteTargetName">Student</strong> with USN <code id="deleteTargetUsn" class="del-usn-code">1RV...</code>? This cannot be undone.
+      </p>
+
+      <div class="modal-btn-row centered">
+        <button id="cancelDeleteBtn" class="btn btn-secondary" type="button">Cancel</button>
+        <button id="confirmDeleteBtn" class="btn btn-danger" type="button">
+          <span id="deleteSpinner" class="btn-spinner hidden"></span>
+          <span id="deleteBtnLabel">Delete Record</span>
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="script.js"></script>
+</body>
+</html>

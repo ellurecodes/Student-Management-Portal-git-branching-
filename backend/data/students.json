@@ -1,0 +1,68 @@
+[
+  {
+    "_id": "4fbac8e99424035739360164",
+    "name": "Vishal Ellure",
+    "usn": "1RV25CS264",
+    "email": "vishal.cs25@rvce.eyu.in",
+    "department": "CSE",
+    "semester": 3,
+    "phone": "",
+    "createdAt": "2026-10-28T04:44:08.427Z",
+    "updatedAt": "2026-10-28T04:44:08.427Z"
+  },
+  {
+    "_id": "87e435c3ac3ae892fbca2bf9",
+    "name": "Vishal",
+    "usn": "1RV25CS205",
+    "email": "vishal.cs25@rvce.edu.in",
+    "department": "CSE",
+    "semester": 3,
+    "phone": "",
+    "createdAt": "2026-10-28T04:22:51.509Z",
+    "updatedAt": "2026-10-28T04:22:51.509Z"
+  },
+  {
+    "_id": "65d8a1f2b3c4d5e6f7a8b901",
+    "name": "Rahul Sharma",
+    "usn": "1RV24CS045",
+    "email": "rahul.sharma@example.edu",
+    "department": "CSE",
+    "semester": 4,
+    "phone": "+91 9876543210",
+    "createdAt": "2026-10-23T04:19:08.088Z",
+    "updatedAt": "2026-10-23T04:19:08.088Z"
+  },
+  {
+    "_id": "65d8a1f2b3c4d5e6f7a8b902",
+    "name": "Ananya Rao",
+    "usn": "1RV23IS012",
+    "email": "ananya.rao@example.edu",
+    "department": "ISE",
+    "semester": 6,
+    "phone": "+91 9845123456",
+    "createdAt": "2026-10-25T04:19:08.088Z",
+    "updatedAt": "2026-10-25T04:19:08.088Z"
+  },
+  {
+    "_id": "65d8a1f2b3c4d5e6f7a8b903",
+    "name": "Vikram Aditya",
+    "usn": "1RV25EC089",
+    "email": "vikram.aditya@example.edu",
+    "department": "ECE",
+    "semester": 2,
+    "phone": "+91 9123456780",
+    "createdAt": "2026-10-27T04:19:08.088Z",
+    "updatedAt": "2026-10-27T04:19:08.088Z"
+  },
+  {
+    "_id": "65d8a1f2b3c4d5e6f7a8b904",
+    "name": "Sneha Patil",
+    "usn": "1RV24AI034",
+    "email": "sneha.patil@example.edu",
+    "department": "AIML",
+    "semester": 4,
+    "phone": "+91 9988776655",
+    "createdAt": "2026-10-27T16:19:08.088Z",
+    "updatedAt": "2026-10-27T16:19:08.088Z"
+  }
+]
